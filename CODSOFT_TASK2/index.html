@@ -3,341 +3,385 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Calculator</title>
+        <title>IRONYARD — Strength & Conditioning Gym</title>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Share+Tech+Mono&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
             :root{
-                --chassis:#2E2B28;
-                --chassis-2:#3A3733;
-                --screen:#161512;
-                --led:#FF7A33;
-                --led-dim: rgba(255,122,51,0.35);
-                --key-num:#EDE7DD;
-                --key-num-shadow:#B8B2A6;
-                --key-fn:#55524C;
-                --key-fn-shadow:#38362F;
-                --key-op:#D9772A;
-                --key-op-shadow:#9C531B;
-                --ink:#1C1A17;
+                --char:#17181B;
+                --steel:#232529;
+                --bone:#EDEAE3;
+                --bone-dim: rgba(237,234,227,0.6);
+                --forge:#E24E1B;
+                --coldblue:#4F6D7A;
+                --line: rgba(237,234,227,0.12);
             }
 
-            *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+            *{ box-sizing:border-box; margin:0; padding:0; }
+            html{ scroll-behavior:smooth; }
+            @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } *{ animation:none !important; transition:none !important; } }
 
             body{
-                min-height:100vh;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                background: radial-gradient(circle at 50% 0%, #47433d 0%, #1a1917 65%);
-                font-family:'Space Mono', monospace;
-                padding:32px 16px;
+                background:var(--char);
+                color:var(--bone);
+                font-family:'Inter', sans-serif;
+                line-height:1.5;
             }
 
-            .device{
-                width:340px;
-                background: linear-gradient(155deg, var(--chassis-2), var(--chassis));
-                border-radius:26px;
-                padding:26px 22px 28px;
-                box-shadow:
-                0 30px 60px rgba(0,0,0,0.5),
-                inset 0 1px 0 rgba(255,255,255,0.06),
-                inset 0 -2px 0 rgba(0,0,0,0.3);
-            }
+            a{ color:inherit; }
+            .wrap{ max-width:1160px; margin:0 auto; padding:0 32px; }
 
-            .device-header{
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                margin-bottom:16px;
-                padding:0 4px;
-            }
-            .brand{
-                font-size:11px;
-                letter-spacing:0.18em;
-                color:#9c968b;
-                text-transform:uppercase;
-            }
-            .power-dot{
-                width:8px; height:8px;
-                border-radius:50%;
-                background:var(--led);
-                box-shadow:0 0 8px 2px var(--led-dim);
-            }
+            .display{ font-family:'Anton', sans-serif; text-transform:uppercase; letter-spacing:0.01em; }
 
-            .screen{
-                background:var(--screen);
-                border-radius:12px;
-                padding:22px 18px 16px;
-                margin-bottom:20px;
-                box-shadow: inset 0 3px 10px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.03);
-                position:relative;
-                overflow:hidden;
-            }
-            .screen::before{
-                content:'';
-                position:absolute; inset:0;
-                background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px);
-                pointer-events:none;
-            }
-            .screen-history{
-                font-family:'Share Tech Mono', monospace;
-                font-size:13px;
-                color: rgba(255,122,51,0.45);
-                min-height:16px;
-                text-align:right;
-                letter-spacing:0.03em;
-                white-space:nowrap;
-                overflow:hidden;
-                text-overflow:ellipsis;
-            }
-            .screen-main{
-                font-family:'Share Tech Mono', monospace;
-                font-size:2.6rem;
-                color:var(--led);
-                text-align:right;
-                text-shadow: 0 0 12px var(--led-dim);
-                letter-spacing:0.02em;
-                white-space:nowrap;
-                overflow-x:auto;
-                scrollbar-width:none;
-                margin-top:6px;
-            }
-            .screen-main::-webkit-scrollbar{ display:none; }
+            /* ===== NAV ===== */
+            .nav{ display:flex; align-items:center; justify-content:space-between; padding:26px 0; border-bottom:1px solid var(--line); }
+            .nav-brand{ font-family:'Anton', sans-serif; font-size:22px; letter-spacing:0.04em; display:flex; align-items:center; gap:10px; }
+            .nav-brand .bar{ width:10px; height:22px; background:var(--forge); }
+            .nav-links{ display:flex; gap:30px; font-family:'IBM Plex Mono', monospace; font-size:13px; }
+            .nav-links a{ text-decoration:none; color:var(--bone-dim); transition:color .2s ease; }
+            .nav-links a:hover{ color:var(--forge); }
+            .nav-cta{ font-family:'IBM Plex Mono', monospace; font-size:13px; text-transform:uppercase; letter-spacing:0.04em; background:var(--forge); color:var(--char); padding:11px 22px; border-radius:2px; text-decoration:none; font-weight:600; }
 
-            .keys{
-                display:grid;
-                grid-template-columns:repeat(4, 1fr);
-                gap:11px;
-            }
+            /* ===== HERO ===== */
+            .hero{ padding:96px 0 88px; display:grid; grid-template-columns:1.05fr 0.95fr; gap:64px; align-items:center; }
+            .hero-eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:var(--forge); display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+            .hero-eyebrow::before{ content:''; width:26px; height:1px; background:var(--forge); }
+            .hero h1{ font-size:clamp(2.8rem, 6vw, 4.6rem); line-height:0.98; margin-bottom:26px; }
+            .hero h1 .accent{ color:var(--forge); }
+            .hero p.lead{ font-size:17px; color:var(--bone-dim); max-width:440px; margin-bottom:36px; }
+            .hero-actions{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+            .btn-primary{ background:var(--forge); color:var(--char); font-weight:700; padding:16px 30px; border-radius:2px; text-decoration:none; font-size:14px; transition:background .2s ease; }
+            .btn-primary:hover{ background:#ff6a34; }
+            .btn-ghost{ border:1px solid var(--line); color:var(--bone); padding:16px 26px; border-radius:2px; text-decoration:none; font-size:14px; transition:border-color .2s ease, color .2s ease; }
+            .btn-ghost:hover{ border-color:var(--forge); color:var(--forge); }
 
-            button.key{
-                border:none;
-                border-radius:12px;
-                height:58px;
-                font-family:'Space Mono', monospace;
-                font-weight:700;
-                font-size:1.15rem;
-                color:var(--ink);
-                cursor:pointer;
-                background:var(--key-num);
-                box-shadow:
-                0 4px 0 var(--key-num-shadow),
-                0 6px 8px rgba(0,0,0,0.3);
-                transition: transform .06s ease, box-shadow .06s ease;
-            }
-            button.key:active{
-                transform:translateY(3px);
-                box-shadow:
-                0 1px 0 var(--key-num-shadow),
-                0 2px 4px rgba(0,0,0,0.3);
-            }
+            /* effort meter — signature element */
+            .effort-meter{ margin-top:44px; max-width:420px; }
+            .effort-meter .label-row{ display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--bone-dim); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
+            .effort-plates{ display:flex; gap:5px; align-items:flex-end; height:26px; }
+            .effort-plates div{ flex:1; background:var(--steel); border-radius:2px; }
+            .effort-plates div.filled{ background:var(--forge); }
+            .effort-plates div:nth-child(1){ height:35%; }
+            .effort-plates div:nth-child(2){ height:55%; }
+            .effort-plates div:nth-child(3){ height:75%; }
+            .effort-plates div:nth-child(4){ height:90%; }
+            .effort-plates div:nth-child(5){ height:100%; }
 
-            button.key.fn{
-                background:var(--key-fn);
-                color:var(--key-num);
-                box-shadow:
-                0 4px 0 var(--key-fn-shadow),
-                0 6px 8px rgba(0,0,0,0.3);
-            }
-            button.key.fn:active{ box-shadow:0 1px 0 var(--key-fn-shadow), 0 2px 4px rgba(0,0,0,0.3); }
+            .hero-visual{ aspect-ratio:4/5; border-radius:6px; position:relative; overflow:hidden; border:1px solid var(--line);
+                background: radial-gradient(circle at 30% 20%, #2b2c2f 0%, #101113 70%); }
+            .hero-visual::before{ content:''; position:absolute; inset:0;
+                background-image: repeating-linear-gradient(115deg, transparent 0 24px, rgba(237,234,227,0.03) 24px 25px); }
+            .hero-visual .tag{ position:absolute; bottom:20px; left:20px; font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--bone-dim); background:rgba(23,24,27,0.75); padding:8px 12px; border-radius:2px; border:1px solid var(--line); }
 
-            button.key.op{
-                background:var(--key-op);
-                color:#2b1704;
-                font-size:1.3rem;
-                box-shadow:
-                0 4px 0 var(--key-op-shadow),
-                0 6px 8px rgba(0,0,0,0.3);
-            }
-            button.key.op:active{ box-shadow:0 1px 0 var(--key-op-shadow), 0 2px 4px rgba(0,0,0,0.3); }
+            /* ===== SECTION SHELL ===== */
+            section{ padding:88px 0; border-top:1px solid var(--line); }
+            .section-head{ margin-bottom:52px; max-width:560px; }
+            .section-num{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--forge); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px; display:block; }
+            .section-title{ font-size:clamp(1.9rem, 3.4vw, 2.7rem); }
+            .section-sub{ color:var(--bone-dim); margin-top:14px; font-size:15px; }
 
-            button.key.zero{ grid-column: span 2; }
+            /* ===== PROGRAMS ===== */
+            .program-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; }
+            .program-card{ background:var(--steel); border:1px solid var(--line); border-radius:6px; padding:28px; transition:transform .2s ease, border-color .2s ease; }
+            .program-card:hover{ transform:translateY(-4px); border-color:var(--forge); }
+            .program-tag{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--forge); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:14px; display:block; }
+            .program-card h3{ font-family:'Anton', sans-serif; font-size:1.5rem; letter-spacing:0.02em; margin-bottom:10px; }
+            .program-card p{ color:var(--bone-dim); font-size:14px; line-height:1.65; margin-bottom:18px; }
+            .program-intensity{ display:flex; gap:4px; margin-bottom:16px; }
+            .program-intensity span{ flex:1; height:5px; border-radius:2px; background:var(--char); }
+            .program-intensity span.on{ background:var(--forge); }
+            .program-meta{ display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--bone-dim); border-top:1px solid var(--line); padding-top:14px; }
 
-            button.key.equals{
-                background:var(--led);
-                color:#2b1704;
-                box-shadow:
-                0 4px 0 #b3480f,
-                0 6px 8px rgba(0,0,0,0.35);
-            }
-            button.key.equals:active{ box-shadow:0 1px 0 #b3480f, 0 2px 4px rgba(0,0,0,0.35); }
+            /* ===== SCHEDULE ===== */
+            .schedule-table{ width:100%; border-collapse:collapse; }
+            .schedule-table th{ text-align:left; font-family:'IBM Plex Mono', monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--bone-dim); padding-bottom:16px; border-bottom:1px solid var(--line); font-weight:500; }
+            .schedule-table td{ padding:18px 0; border-bottom:1px solid var(--line); font-size:14.5px; }
+            .schedule-table td.time{ font-family:'IBM Plex Mono', monospace; color:var(--forge); font-size:13px; }
+            .schedule-table td.class-name{ font-weight:600; }
+            .schedule-table td.coach{ color:var(--bone-dim); }
 
-            button.key:focus-visible{
-                outline:2px solid var(--led);
-                outline-offset:2px;
-            }
+            /* ===== COACHES ===== */
+            .coach-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:20px; }
+            .coach-card{ text-align:left; }
+            .coach-photo{ aspect-ratio:3/4; border-radius:6px; border:1px solid var(--line); margin-bottom:14px;
+                background: repeating-linear-gradient(115deg, transparent 0 20px, rgba(237,234,227,0.03) 20px 21px), var(--steel);
+                display:flex; align-items:flex-end; padding:14px; }
+            .coach-photo span{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--bone-dim); text-transform:uppercase; }
+            .coach-card h4{ font-family:'Anton', sans-serif; font-size:1.1rem; letter-spacing:0.02em; margin-bottom:4px; }
+            .coach-card p{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--forge); text-transform:uppercase; letter-spacing:0.04em; }
 
-            @media (max-width:380px){
-                .device{ width:100%; max-width:340px; }
+            /* ===== TESTIMONIAL ===== */
+            .testimonial{ max-width:720px; }
+            .testimonial blockquote{ font-family:'Anton', sans-serif; font-size:clamp(1.5rem, 2.8vw, 2.1rem); line-height:1.3; letter-spacing:0.01em; }
+            .testimonial cite{ display:block; margin-top:24px; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--bone-dim); font-style:normal; letter-spacing:0.04em; }
+
+            /* ===== PRICING ===== */
+            .price-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; }
+            .price-card{ background:var(--steel); border:1px solid var(--line); border-radius:6px; padding:32px; display:flex; flex-direction:column; }
+            .price-card.featured{ border-color:var(--forge); position:relative; }
+            .price-card.featured::before{ content:'MOST POPULAR'; position:absolute; top:-11px; left:28px; background:var(--forge); color:var(--char); font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.06em; padding:4px 10px; border-radius:2px; font-weight:700; }
+            .price-card h3{ font-family:'Anton', sans-serif; font-size:1.3rem; letter-spacing:0.02em; margin-bottom:6px; }
+            .price-card .price{ font-family:'Anton', sans-serif; font-size:2.4rem; margin:14px 0; }
+            .price-card .price span{ font-size:14px; color:var(--bone-dim); font-family:'Inter',sans-serif; text-transform:none; }
+            .price-card ul{ list-style:none; margin:20px 0 28px; flex-grow:1; }
+            .price-card li{ font-size:13.5px; color:var(--bone-dim); padding:8px 0; border-top:1px solid var(--line); }
+            .price-card li:first-child{ border-top:none; }
+
+            /* ===== CTA ===== */
+            .cta-box{ background:var(--steel); border:1px solid var(--line); border-radius:8px; padding:52px; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+            .cta-box h3{ font-family:'Anton', sans-serif; font-size:1.7rem; max-width:420px; letter-spacing:0.01em; }
+            .cta-form{ display:flex; gap:12px; flex-wrap:wrap; }
+            .cta-form input{ font-family:'Inter', sans-serif; font-size:14px; padding:14px 16px; border:1px solid var(--line); border-radius:2px; background:var(--char); color:var(--bone); min-width:240px; }
+            .cta-form input:focus{ outline:2px solid var(--forge); outline-offset:1px; }
+            .cta-form button{ font-family:'IBM Plex Mono', monospace; font-size:13px; text-transform:uppercase; letter-spacing:0.04em; background:var(--forge); color:var(--char); border:none; padding:14px 26px; border-radius:2px; cursor:pointer; font-weight:700; transition:background .2s ease; }
+            .cta-form button:hover{ background:#ff6a34; }
+
+            /* ===== FOOTER ===== */
+            footer{ padding:56px 0 40px; }
+            .footer-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:32px; margin-bottom:48px; }
+            .footer-brand{ font-family:'Anton', sans-serif; font-size:20px; margin-bottom:14px; letter-spacing:0.02em; }
+            .footer-grid p{ color:var(--bone-dim); font-size:13.5px; max-width:260px; line-height:1.6; }
+            .footer-col h4{ font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--bone-dim); margin-bottom:16px; }
+            .footer-col a{ display:block; text-decoration:none; color:var(--bone); font-size:14px; margin-bottom:10px; opacity:0.85; transition:opacity .2s ease, color .2s ease; }
+            .footer-col a:hover{ opacity:1; color:var(--forge); }
+            .footer-bottom{ border-top:1px solid var(--line); padding-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--bone-dim); }
+
+            a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--forge); outline-offset:2px; }
+
+            @media (max-width:860px){
+                .hero{ grid-template-columns:1fr; padding:56px 0; }
+                .program-grid, .price-grid{ grid-template-columns:1fr; }
+                .coach-grid{ grid-template-columns:1fr 1fr; }
+                .footer-grid{ grid-template-columns:1fr 1fr; }
+                .nav-links{ display:none; }
+                .cta-box{ flex-direction:column; align-items:flex-start; }
+                .schedule-table{ font-size:13px; }
             }
         </style>
     </head>
     <body>
 
-        <div class="device">
-            <div class="device-header">
-                <span class="brand">Model CX-01</span>
-                <span class="power-dot"></span>
-            </div>
-
-            <div class="screen">
-                <div class="screen-history" id="history">&nbsp;</div>
-                <div class="screen-main" id="display">0</div>
-            </div>
-
-            <div class="keys">
-                <button class="key fn" data-action="clear">AC</button>
-                <button class="key fn" data-action="backspace">⌫</button>
-                <button class="key fn" data-action="percent">%</button>
-                <button class="key op" data-action="operator" data-value="÷">÷</button>
-
-                <button class="key" data-action="number" data-value="7">7</button>
-                <button class="key" data-action="number" data-value="8">8</button>
-                <button class="key" data-action="number" data-value="9">9</button>
-                <button class="key op" data-action="operator" data-value="×">×</button>
-
-                <button class="key" data-action="number" data-value="4">4</button>
-                <button class="key" data-action="number" data-value="5">5</button>
-                <button class="key" data-action="number" data-value="6">6</button>
-                <button class="key op" data-action="operator" data-value="−">−</button>
-
-                <button class="key" data-action="number" data-value="1">1</button>
-                <button class="key" data-action="number" data-value="2">2</button>
-                <button class="key" data-action="number" data-value="3">3</button>
-                <button class="key op" data-action="operator" data-value="+">+</button>
-
-                <button class="key zero" data-action="number" data-value="0">0</button>
-                <button class="key" data-action="decimal">.</button>
-                <button class="key equals" data-action="equals">=</button>
-            </div>
+        <div class="wrap">
+            <nav class="nav">
+                <div class="nav-brand"><span class="bar"></span>IRONYARD</div>
+                <div class="nav-links">
+                    <a href="#programs">Programs</a>
+                    <a href="#schedule">Schedule</a>
+                    <a href="#coaches">Coaches</a>
+                    <a href="#pricing">Pricing</a>
+                </div>
+                <a href="#pricing" class="nav-cta">Join Now</a>
+            </nav>
         </div>
 
-        <script>
-            const display = document.getElementById('display');
-            const historyEl = document.getElementById('history');
+        <div class="wrap">
+            <section class="hero" style="border-top:none;">
+                <div>
+                    <p class="hero-eyebrow">Strength · Conditioning · Recovery</p>
+                    <h1 class="display">Train like it<br>actually <span class="accent">matters.</span></h1>
+                    <p class="lead">Small-group strength and conditioning coaching in a warehouse gym built for barbells, not mirrors. Every session programmed, every rep coached.</p>
+                    <div class="hero-actions">
+                        <a href="#pricing" class="btn-primary">Book a Free Trial</a>
+                        <a href="#programs" class="btn-ghost">See the programs</a>
+                    </div>
+                    <div class="effort-meter">
+                        <div class="label-row"><span>Recovery</span><span>Moderate</span><span>Max Effort</span></div>
+                        <div class="effort-plates">
+                            <div class="filled"></div>
+                            <div class="filled"></div>
+                            <div class="filled"></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <span class="tag">Today's Lift · Back Squat 5x5</span>
+                </div>
+            </section>
+        </div>
 
-            let current = '0';
-            let previous = null;
-            let operator = null;
-            let justEvaluated = false;
+        <div class="wrap">
+            <section id="programs">
+                <div class="section-head">
+                    <span class="section-num">01 · Programs</span>
+                    <h2 class="section-title display">Pick your focus</h2>
+                    <p class="section-sub">Every program is coached live, in groups of 8 or fewer.</p>
+                </div>
+                <div class="program-grid">
+                    <div class="program-card">
+                        <span class="program-tag">Strength</span>
+                        <h3>Barbell Strength</h3>
+                        <p>Squat, bench, deadlift and overhead press, built on a 12-week progressive cycle with coached technique work every session.</p>
+                        <div class="program-intensity"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+                        <div class="program-meta"><span>4 sessions/week</span><span>60 min</span></div>
+                    </div>
+                    <div class="program-card">
+                        <span class="program-tag">Conditioning</span>
+                        <h3>Metcon</h3>
+                        <p>High-intensity interval training mixing kettlebells, rowing and bodyweight work. Built to spike your heart rate, not just your soreness.</p>
+                        <div class="program-intensity"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+                        <div class="program-meta"><span>3 sessions/week</span><span>45 min</span></div>
+                    </div>
+                    <div class="program-card">
+                        <span class="program-tag">Recovery</span>
+                        <h3>Mobility & Reset</h3>
+                        <p>Guided mobility work, breathwork and light conditioning for active recovery days — recommended alongside any other program.</p>
+                        <div class="program-intensity"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+                        <div class="program-meta"><span>2 sessions/week</span><span>40 min</span></div>
+                    </div>
+                </div>
+            </section>
+        </div>
 
-            const MAX_DIGITS = 12;
+        <div class="wrap">
+            <section id="schedule">
+                <div class="section-head">
+                    <span class="section-num">02 · Schedule</span>
+                    <h2 class="section-title display">Today's classes</h2>
+                    <p class="section-sub">Drop-ins welcome — book your spot 30 minutes ahead.</p>
+                </div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr><th>Time</th><th>Class</th><th>Coach</th><th>Spots</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="time">06:00 AM</td><td class="class-name">Barbell Strength</td><td class="coach">Coach Arjun</td><td>4 / 8</td></tr>
+                        <tr><td class="time">07:15 AM</td><td class="class-name">Metcon</td><td class="coach">Coach Neha</td><td>6 / 8</td></tr>
+                        <tr><td class="time">05:30 PM</td><td class="class-name">Mobility & Reset</td><td class="coach">Coach Priya</td><td>3 / 8</td></tr>
+                        <tr><td class="time">06:45 PM</td><td class="class-name">Barbell Strength</td><td class="coach">Coach Arjun</td><td>7 / 8</td></tr>
+                        <tr><td class="time">08:00 PM</td><td class="class-name">Metcon</td><td class="coach">Coach Rohit</td><td>5 / 8</td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
 
-            function updateScreen(){
-                display.textContent = current;
-                historyEl.textContent = previous !== null && operator
-                ? `${previous} ${operator}`
-                : '\u00A0';
-            }
+        <div class="wrap">
+            <section id="coaches">
+                <div class="section-head">
+                    <span class="section-num">03 · Coaches</span>
+                    <h2 class="section-title display">Coached, not counted</h2>
+                    <p class="section-sub">Every coach is certified and programs their own sessions.</p>
+                </div>
+                <div class="coach-grid">
+                    <div class="coach-card">
+                        <div class="coach-photo"><span>Photo</span></div>
+                        <h4>Arjun Mehta</h4>
+                        <p>Strength Coach</p>
+                    </div>
+                    <div class="coach-card">
+                        <div class="coach-photo"><span>Photo</span></div>
+                        <h4>Neha Shah</h4>
+                        <p>Conditioning Coach</p>
+                    </div>
+                    <div class="coach-card">
+                        <div class="coach-photo"><span>Photo</span></div>
+                        <h4>Priya Nair</h4>
+                        <p>Mobility Coach</p>
+                    </div>
+                    <div class="coach-card">
+                        <div class="coach-photo"><span>Photo</span></div>
+                        <h4>Rohit Verma</h4>
+                        <p>Conditioning Coach</p>
+                    </div>
+                </div>
+            </section>
+        </div>
 
-            function inputNumber(digit){
-                if (justEvaluated){
-                current = digit;
-                justEvaluated = false;
-                } else if (current === '0'){
-                current = digit;
-                } else if (current.replace('-','').replace('.','').length < MAX_DIGITS){
-                current += digit;
-                }
-                updateScreen();
-            }
+        <div class="wrap">
+            <section>
+                <div class="testimonial">
+                    <blockquote>"Six months in and my squat's up 40kg. First gym where the coach actually watches your bar path instead of scrolling on their phone."</blockquote>
+                    <cite>— Kunal S., member since 2025</cite>
+                </div>
+            </section>
+        </div>
 
-            function inputDecimal(){
-                if (justEvaluated){
-                current = '0.';
-                justEvaluated = false;
-                updateScreen();
-                return;
-                }
-                if (!current.includes('.')) current += '.';
-                updateScreen();
-            }
+        <div class="wrap">
+            <section id="pricing">
+                <div class="section-head">
+                    <span class="section-num">04 · Membership</span>
+                    <h2 class="section-title display">Pick your plan</h2>
+                    <p class="section-sub">No lock-in contracts — pause or cancel anytime.</p>
+                </div>
+                <div class="price-grid">
+                    <div class="price-card">
+                        <h3>Drop-In</h3>
+                        <p class="price">₹500 <span>/ session</span></p>
+                        <ul>
+                        <li>Any single class</li>
+                        <li>No commitment</li>
+                        <li>Book same-day</li>
+                        </ul>
+                        <a href="#" class="btn-ghost" style="text-align:center;">Book a Session</a>
+                    </div>
+                    <div class="price-card featured">
+                        <h3>Unlimited</h3>
+                        <p class="price">₹4,500 <span>/ month</span></p>
+                        <ul>
+                        <li>Unlimited classes</li>
+                        <li>All programs included</li>
+                        <li>Free monthly check-in</li>
+                        </ul>
+                        <a href="#" class="btn-primary" style="text-align:center;">Join Now</a>
+                    </div>
+                    <div class="price-card">
+                        <h3>3x / Week</h3>
+                        <p class="price">₹3,200 <span>/ month</span></p>
+                        <ul>
+                        <li>3 sessions per week</li>
+                        <li>Any program</li>
+                        <li>Roll over unused sessions</li>
+                        </ul>
+                        <a href="#" class="btn-ghost" style="text-align:center;">Get Started</a>
+                    </div>
+                </div>
+            </section>
+        </div>
 
-            function chooseOperator(op){
-                if (operator !== null && previous !== null && !justEvaluated){
-                evaluate();
-                }
-                previous = current;
-                operator = op;
-                justEvaluated = false;
-                current = '0';
-                updateScreen();
-            }
+        <div class="wrap">
+            <section style="border-bottom:none;">
+                <div class="cta-box">
+                    <h3>First session's free. No card required.</h3>
+                    <form class="cta-form">
+                        <input type="email" placeholder="you@example.com" required>
+                        <button type="submit">Claim Free Trial</button>
+                    </form>
+                </div>
+            </section>
+        </div>
 
-            function compute(a, b, op){
-                a = parseFloat(a);
-                b = parseFloat(b);
-                let result;
-                switch(op){
-                case '+': result = a + b; break;
-                case '−': result = a - b; break;
-                case '×': result = a * b; break;
-                case '÷': result = b === 0 ? NaN : a / b; break;
-                default: return b;
-                }
-                if (Number.isNaN(result)) return 'Error';
-                return parseFloat(result.toFixed(10)).toString();
-            }
-
-            function evaluate(){
-                if (operator === null || previous === null) return;
-                const result = compute(previous, current, operator);
-                current = result;
-                previous = null;
-                operator = null;
-                justEvaluated = true;
-                updateScreen();
-            }
-
-            function clearAll(){
-                current = '0';
-                previous = null;
-                operator = null;
-                justEvaluated = false;
-                updateScreen();
-            }
-
-            function backspace(){
-                if (justEvaluated){ clearAll(); return; }
-                current = current.length > 1 ? current.slice(0, -1) : '0';
-                updateScreen();
-            }
-
-            function percent(){
-                current = parseFloat((parseFloat(current) / 100).toFixed(10)).toString();
-                updateScreen();
-            }
-
-            document.querySelectorAll('.key').forEach(btn => {
-                btn.addEventListener('click', () => {
-                const action = btn.dataset.action;
-                const value = btn.dataset.value;
-
-                if (action === 'number') inputNumber(value);
-                else if (action === 'decimal') inputDecimal();
-                else if (action === 'operator') chooseOperator(value);
-                else if (action === 'equals') evaluate();
-                else if (action === 'clear') clearAll();
-                else if (action === 'backspace') backspace();
-                else if (action === 'percent') percent();
-                });
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key >= '0' && e.key <= '9') inputNumber(e.key);
-                else if (e.key === '.') inputDecimal();
-                else if (e.key === '+') chooseOperator('+');
-                else if (e.key === '-') chooseOperator('−');
-                else if (e.key === '*') chooseOperator('×');
-                else if (e.key === '/'){ e.preventDefault(); chooseOperator('÷'); }
-                else if (e.key === 'Enter' || e.key === '='){ e.preventDefault(); evaluate(); }
-                else if (e.key === 'Backspace') backspace();
-                else if (e.key === 'Escape') clearAll();
-            });
-
-            updateScreen();
-        </script>
-
+        <div class="wrap">
+            <footer>
+                <div class="footer-grid">
+                <div>
+                    <p class="footer-brand display">IRONYARD</p>
+                    <p>A warehouse gym for people who want to be coached, not just counted in.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Train</h4>
+                    <a href="#programs">Programs</a>
+                    <a href="#schedule">Schedule</a>
+                    <a href="#pricing">Membership</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Gym</h4>
+                    <a href="#coaches">Coaches</a>
+                    <a href="#">Location</a>
+                    <a href="#">Careers</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <a href="#">Contact</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Cancel Membership</a>
+                </div>
+                </div>
+                <div class="footer-bottom">
+                    <span>&copy; 2026 IRONYARD Strength & Conditioning</span>
+                    <span>Show up. Lift heavy. Recover well.</span>
+                </div>
+            </footer>
+        </div>
     </body>
 </html>
