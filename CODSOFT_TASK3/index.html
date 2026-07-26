@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Calculator</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+            :root{
+                --chassis:#2E2B28;
+                --chassis-2:#3A3733;
+                --screen:#161512;
+                --led:#FF7A33;
+                --led-dim: rgba(255,122,51,0.35);
+                --key-num:#EDE7DD;
+                --key-num-shadow:#B8B2A6;
+                --key-fn:#55524C;
+                --key-fn-shadow:#38362F;
+                --key-op:#D9772A;
+                --key-op-shadow:#9C531B;
+                --ink:#1C1A17;
+            }
+
+            *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+            body{
+                min-height:100vh;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background: radial-gradient(circle at 50% 0%, #47433d 0%, #1a1917 65%);
+                font-family:'Space Mono', monospace;
+                padding:32px 16px;
+            }
+
+            .device{
+                width:340px;
+                background: linear-gradient(155deg, var(--chassis-2), var(--chassis));
+                border-radius:26px;
+                padding:26px 22px 28px;
+                box-shadow:
+                0 30px 60px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                inset 0 -2px 0 rgba(0,0,0,0.3);
+            }
+
+            .device-header{
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                margin-bottom:16px;
+                padding:0 4px;
+            }
+            .brand{
+                font-size:11px;
+                letter-spacing:0.18em;
+                color:#9c968b;
+                text-transform:uppercase;
+            }
+            .power-dot{
+                width:8px; height:8px;
+                border-radius:50%;
+                background:var(--led);
+                box-shadow:0 0 8px 2px var(--led-dim);
+            }
+
+            .screen{
+                background:var(--screen);
+                border-radius:12px;
+                padding:22px 18px 16px;
+                margin-bottom:20px;
+                box-shadow: inset 0 3px 10px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.03);
+                position:relative;
+                overflow:hidden;
+            }
+            .screen::before{
+                content:'';
+                position:absolute; inset:0;
+                background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px);
+                pointer-events:none;
+            }
+            .screen-history{
+                font-family:'Share Tech Mono', monospace;
+                font-size:13px;
+                color: rgba(255,122,51,0.45);
+                min-height:16px;
+                text-align:right;
+                letter-spacing:0.03em;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+            }
+            .screen-main{
+                font-family:'Share Tech Mono', monospace;
+                font-size:2.6rem;
+                color:var(--led);
+                text-align:right;
+                text-shadow: 0 0 12px var(--led-dim);
+                letter-spacing:0.02em;
+                white-space:nowrap;
+                overflow-x:auto;
+                scrollbar-width:none;
+                margin-top:6px;
+            }
+            .screen-main::-webkit-scrollbar{ display:none; }
+
+            .keys{
+                display:grid;
+                grid-template-columns:repeat(4, 1fr);
+                gap:11px;
+            }
+
+            button.key{
+                border:none;
+                border-radius:12px;
+                height:58px;
+                font-family:'Space Mono', monospace;
+                font-weight:700;
+                font-size:1.15rem;
+                color:var(--ink);
+                cursor:pointer;
+                background:var(--key-num);
+                box-shadow:
+                0 4px 0 var(--key-num-shadow),
+                0 6px 8px rgba(0,0,0,0.3);
+                transition: transform .06s ease, box-shadow .06s ease;
+            }
+            button.key:active{
+                transform:translateY(3px);
+                box-shadow:
+                0 1px 0 var(--key-num-shadow),
+                0 2px 4px rgba(0,0,0,0.3);
+            }
+
+            button.key.fn{
+                background:var(--key-fn);
+                color:var(--key-num);
+                box-shadow:
+                0 4px 0 var(--key-fn-shadow),
+                0 6px 8px rgba(0,0,0,0.3);
+            }
+            button.key.fn:active{ box-shadow:0 1px 0 var(--key-fn-shadow), 0 2px 4px rgba(0,0,0,0.3); }
+
+            button.key.op{
+                background:var(--key-op);
+                color:#2b1704;
+                font-size:1.3rem;
+                box-shadow:
+                0 4px 0 var(--key-op-shadow),
+                0 6px 8px rgba(0,0,0,0.3);
+            }
+            button.key.op:active{ box-shadow:0 1px 0 var(--key-op-shadow), 0 2px 4px rgba(0,0,0,0.3); }
+
+            button.key.zero{ grid-column: span 2; }
+
+            button.key.equals{
+                background:var(--led);
+                color:#2b1704;
+                box-shadow:
+                0 4px 0 #b3480f,
+                0 6px 8px rgba(0,0,0,0.35);
+            }
+            button.key.equals:active{ box-shadow:0 1px 0 #b3480f, 0 2px 4px rgba(0,0,0,0.35); }
+
+            button.key:focus-visible{
+                outline:2px solid var(--led);
+                outline-offset:2px;
+            }
+
+            @media (max-width:380px){
+                .device{ width:100%; max-width:340px; }
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="device">
+            <div class="device-header">
+                <span class="brand">Model CX-01</span>
+                <span class="power-dot"></span>
+            </div>
+
+            <div class="screen">
+                <div class="screen-history" id="history">&nbsp;</div>
+                <div class="screen-main" id="display">0</div>
+            </div>
+
+            <div class="keys">
+                <button class="key fn" data-action="clear">AC</button>
+                <button class="key fn" data-action="backspace">⌫</button>
+                <button class="key fn" data-action="percent">%</button>
+                <button class="key op" data-action="operator" data-value="÷">÷</button>
+
+                <button class="key" data-action="number" data-value="7">7</button>
+                <button class="key" data-action="number" data-value="8">8</button>
+                <button class="key" data-action="number" data-value="9">9</button>
+                <button class="key op" data-action="operator" data-value="×">×</button>
+
+                <button class="key" data-action="number" data-value="4">4</button>
+                <button class="key" data-action="number" data-value="5">5</button>
+                <button class="key" data-action="number" data-value="6">6</button>
+                <button class="key op" data-action="operator" data-value="−">−</button>
+
+                <button class="key" data-action="number" data-value="1">1</button>
+                <button class="key" data-action="number" data-value="2">2</button>
+                <button class="key" data-action="number" data-value="3">3</button>
+                <button class="key op" data-action="operator" data-value="+">+</button>
+
+                <button class="key zero" data-action="number" data-value="0">0</button>
+                <button class="key" data-action="decimal">.</button>
+                <button class="key equals" data-action="equals">=</button>
+            </div>
+        </div>
+
+        <script>
+            const display = document.getElementById('display');
+            const historyEl = document.getElementById('history');
+
+            let current = '0';
+            let previous = null;
+            let operator = null;
+            let justEvaluated = false;
+
+            const MAX_DIGITS = 12;
+
+            function updateScreen(){
+                display.textContent = current;
+                historyEl.textContent = previous !== null && operator
+                ? `${previous} ${operator}`
+                : '\u00A0';
+            }
+
+            function inputNumber(digit){
+                if (justEvaluated){
+                current = digit;
+                justEvaluated = false;
+                } else if (current === '0'){
+                current = digit;
+                } else if (current.replace('-','').replace('.','').length < MAX_DIGITS){
+                current += digit;
+                }
+                updateScreen();
+            }
+
+            function inputDecimal(){
+                if (justEvaluated){
+                current = '0.';
+                justEvaluated = false;
+                updateScreen();
+                return;
+                }
+                if (!current.includes('.')) current += '.';
+                updateScreen();
+            }
+
+            function chooseOperator(op){
+                if (operator !== null && previous !== null && !justEvaluated){
+                evaluate();
+                }
+                previous = current;
+                operator = op;
+                justEvaluated = false;
+                current = '0';
+                updateScreen();
+            }
+
+            function compute(a, b, op){
+                a = parseFloat(a);
+                b = parseFloat(b);
+                let result;
+                switch(op){
+                case '+': result = a + b; break;
+                case '−': result = a - b; break;
+                case '×': result = a * b; break;
+                case '÷': result = b === 0 ? NaN : a / b; break;
+                default: return b;
+                }
+                if (Number.isNaN(result)) return 'Error';
+                return parseFloat(result.toFixed(10)).toString();
+            }
+
+            function evaluate(){
+                if (operator === null || previous === null) return;
+                const result = compute(previous, current, operator);
+                current = result;
+                previous = null;
+                operator = null;
+                justEvaluated = true;
+                updateScreen();
+            }
+
+            function clearAll(){
+                current = '0';
+                previous = null;
+                operator = null;
+                justEvaluated = false;
+                updateScreen();
+            }
+
+            function backspace(){
+                if (justEvaluated){ clearAll(); return; }
+                current = current.length > 1 ? current.slice(0, -1) : '0';
+                updateScreen();
+            }
+
+            function percent(){
+                current = parseFloat((parseFloat(current) / 100).toFixed(10)).toString();
+                updateScreen();
+            }
+
+            document.querySelectorAll('.key').forEach(btn => {
+                btn.addEventListener('click', () => {
+                const action = btn.dataset.action;
+                const value = btn.dataset.value;
+
+                if (action === 'number') inputNumber(value);
+                else if (action === 'decimal') inputDecimal();
+                else if (action === 'operator') chooseOperator(value);
+                else if (action === 'equals') evaluate();
+                else if (action === 'clear') clearAll();
+                else if (action === 'backspace') backspace();
+                else if (action === 'percent') percent();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key >= '0' && e.key <= '9') inputNumber(e.key);
+                else if (e.key === '.') inputDecimal();
+                else if (e.key === '+') chooseOperator('+');
+                else if (e.key === '-') chooseOperator('−');
+                else if (e.key === '*') chooseOperator('×');
+                else if (e.key === '/'){ e.preventDefault(); chooseOperator('÷'); }
+                else if (e.key === 'Enter' || e.key === '='){ e.preventDefault(); evaluate(); }
+                else if (e.key === 'Backspace') backspace();
+                else if (e.key === 'Escape') clearAll();
+            });
+
+            updateScreen();
+        </script>
+
+    </body>
+</html>
